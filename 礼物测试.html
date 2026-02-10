@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>9屏像素故事</title>
+  <style>
+    :root{
+      --bg:#0b0d12;
+      --fg:#e8eef7;
+      --muted:#9aa7b6;
+      --card:#121826;
+      --accent:#7aa7ff;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bot: env(safe-area-inset-bottom, 0px);
+      --maxw: 420px;
+    }
+    *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 800px at 50% 0%, #121a2c 0%, var(--bg) 55%);
+      color:var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      overflow:hidden;
+    }
+
+    /* 顶部进度 */
+    header{
+      position:fixed;
+      top:0; left:0; right:0;
+      padding: calc(10px + var(--safe-top)) 16px 10px;
+      display:flex;
+      justify-content:center;
+      pointer-events:none;
+      z-index:10;
+    }
+    .progress{
+      width:min(var(--maxw), calc(100% - 32px));
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:13px;
+      color:var(--muted);
+      opacity:.95;
+    }
+
+    /* 主容器 */
+    main{
+      height:100%;
+      display:flex;
+      justify-content:center;
+      align-items:stretch;
+      padding: calc(54px + var(--safe-top)) 16px calc(18px + var(--safe-bot));
+    }
+
+    .screen{
+      width:min(var(--maxw), 100%);
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .card{
+      background: color-mix(in srgb, var(--card) 92%, black);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 16px;
+      overflow:hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,.35);
+    }
+
+    /* 图片区 */
+    .imgWrap{
+      position:relative;
+      flex: 1 1 auto;
+      min-height: 45vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+    }
+
+    img.pixel{
+      width: 100%;
+      height: 100%;
+      max-height: 62vh;
+      object-fit: contain;
+      image-rendering: pixelated; /* 关键：像素风不模糊 */
+      image-rendering: crisp-edges;
+      background: #0a0f1c;
+      display:block;
+    }
+
+    .tapHint{
+      position:absolute;
+      left:12px; right:12px; bottom:12px;
+      padding:10px 12px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.10);
+      color: rgba(232,238,247,.92);
+      font-size: 13px;
+      line-height: 1.25;
+      backdrop-filter: blur(8px);
+    }
+
+    /* 文本区 */
+    .textCard{
+      padding: 14px 14px 16px;
+      min-height: 120px; /* 给打字机预留一点高度防止跳动 */
+    }
+    .title{
+      margin:0 0 8px;
+      font-weight: 650;
+      letter-spacing:.2px;
+      font-size: 16px;
+    }
+    .text{
+      margin:0;
+      color: rgba(232,238,247,.88);
+      font-size: 15px;
+      line-height: 1.65;
+      white-space: pre-line;
+      min-height: 1.65em;
+    }
+    /* 打字机光标效果（可选） */
+    .typing-cursor::after {
+      content: '|';
+      display: inline-block;
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
+      color: var(--accent);
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .hidden{display:none;}
+
+    /* 最终屏交互区 */
+    .actions{
+      display:flex;
+      gap:10px;
+      margin-top:12px;
+    }
+    button, a.btn{
+      flex:1;
+      padding:12px 12px;
+      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--fg);
+      font-size: 15px;
+      font-weight: 600;
+      text-align:center;
+      text-decoration:none;
+      cursor: pointer;
+    }
+    button.primary, a.btn.primary{
+      background: linear-gradient(180deg, rgba(122,167,255,.95), rgba(122,167,255,.65));
+      border-color: rgba(122,167,255,.55);
+      color:#071022;
+    }
+    .small{
+      margin-top:10px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .kouling{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius: 12px;
+      border:1px dashed rgba(255,255,255,.18);
+      background: rgba(0,0,0,.22);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 15px;
+      letter-spacing:.2px;
+      word-break: break-all;
+    }
+
+    /* 简单的淡入动画 */
+    .fadeIn{
+      animation: fadeIn .25s ease-out both;
+    }
+    @keyframes fadeIn{from{opacity:0; transform: translateY(4px);} to{opacity:1; transform: translateY(0);} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="progress">
+      <div id="pLeft">1 / 9</div>
+      <div id="pRight">点击图片查看文字</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="screen">
+      <section class="card imgWrap" id="tapArea" aria-label="点击交互区">
+        <img id="img" class="pixel" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7WzW0AAAAASUVORK5CYII=" alt="Pixel Art" />
+        <div class="tapHint" id="hint">点击图片查看文字</div>
+      </section>
+
+      <section class="card textCard hidden" id="textCard">
+        <h2 class="title" id="title"></h2>
+        <p class="text" id="text"></p>
+
+        <div id="finalExtras" class="hidden">
+          <div class="kouling" id="koulingBox"></div>
+          <div class="actions">
+            <button class="primary" id="copyBtn" type="button">复制口令</button>
+            <a class="btn" id="openAlipayBtn" href="#" rel="noopener">打开支付宝</a>
+          </div>
+          <div class="small" id="finalTips"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    /**
+     * 配置区
+     * 1-8屏：交互故事
+     * 第9屏（index=8）：支付宝红包
+     */
+    
+    // ====== 修改：这里现在是8个场景 ======
+    const SCENES = [
+      {
+        title: "给喜欢仪式感的肖老师",
+        text: "肖老师说这是第一次给男生送花, 那我也要送给肖老师这份充满仪式感的礼物, 也是我第一“笨拙”的礼物.总共有9张哦, 猜猜里面会有哪些照片吧,嘻嘻",
+        img: "./images/1.png", // 替换你的图片链接
+        hintA: "点击图片查看文字",
+        hintB: "再点击进入下一页"
+      },
+      {
+        title: "我不喜欢视频",
+        text: "我大概是个醋坛子, 肖老师说过跟异性的互动(除了好朋友和同事),都能记得.所以这第一次超长视频,感受到了肖老师对我的超级破例,不光跟我视频, 还轮流展示猫猫,可爱得不行,赶紧偷拍!于是有了这第二张照片.",
+        img: "./images/2.png", 
+        hintA: "点击图片查看文字",
+        hintB: "再点击进入下一页"
+      },
+      {
+        title: "怎么能这么可爱!!",
+        text: "看到这组照片,我真的要被可爱得融化了.不光马上设置为壁纸, 还偷偷去查了下这个帽子想送给你!(不过淘宝上没有正品,气死了😡),不过后面肖老师自己也觉得贵了,而且不太喜欢这种“溢价”,又更喜欢你了,我怎么这么大的福气,找到又漂亮可爱,又贤惠的宝宝的~",
+        img: "./images/3.png",
+      },
+      {
+        title: "照片回顾时间!",
+        text: "肖老师一直在跟我发以前的照片呢,原来一直是活力满满的样子呢,只是现在经常感叹没之前瘦了,我夹在中间进退两难,我打这段话的时候她还在开开心心啃着冷冻榴莲,我看着也开心,但也想监督她,这样就不会再垂头丧气地讲出“我当时好瘦了”",
+        img: "./images/4.png",
+      },
+      {
+        title: "用AI的肖老师",
+        text: "",
+        img: "./images/5.png",
+      },
+      {
+        title: "永远默默支持理解我的肖老师",
+        text: "第6页文案占位。",
+        img: "./images/6.png",
+      },
+      {
+        title: "美死我了!姐姐!!",
+        text: "第7页文案占位。",
+        img: "./images/7.png",
+      },
+      {
+        title: "别忘了牛牛和凑凑哦",
+        text: "这是最后一张剧情图。\n再点击一次，就会看到我准备的礼物啦。",
+        img: "./images/8.png",
+        hintB: "再点击领取礼物"
+      }
+    ];
+
+    // ====== 最终页配置 (实际上是第9屏) ======
+    const FINAL = {
+      title: "第9页｜专属礼物",
+      desc:
+`这是送给你的红包，按下面步骤领取：
+
+1）点击“复制口令”
+2）点击“打开支付宝”
+3）等待弹窗领取`,
+      kouling: "这里填写你的红包口令", 
+      alipayLink: "", // 如果有 scheme link 可填，没有则不填
+      tips: "如果跳转失败，请手动打开支付宝搜索口令。"
+    };
+
+    // ====== 逻辑代码 ======
+    const $ = (id) => document.getElementById(id);
+    
+    // 元素获取
+    const elements = {
+      img: $("img"),
+      tapArea: $("tapArea"),
+      hint: $("hint"),
+      textCard: $("textCard"),
+      title: $("title"),
+      text: $("text"),
+      finalExtras: $("finalExtras"),
+      koulingBox: $("koulingBox"),
+      copyBtn: $("copyBtn"),
+      openAlipayBtn: $("openAlipayBtn"),
+      finalTips: $("finalTips"),
+      pLeft: $("pLeft"),
+      pRight: $("pRight")
+    };
+
+    // 状态变量
+    const TOTAL_STEPS = SCENES.length + 1; // 8场景 + 1最终 = 9
+    let currentIndex = 0;   // 0 ~ 8
+    let isTextRevealed = false;
+    let typeInterval = null; // 用于存储打字机的定时器ID
+
+    // --- 核心：打字机函数 ---
+    function typeWriter(content, element) {
+      // 1. 清空内容和旧定时器
+      element.textContent = "";
+      if (typeInterval) clearInterval(typeInterval);
+      
+      // 2. 添加光标样式
+      element.classList.add("typing-cursor");
+
+      // 3. 开始打字
+      let i = 0;
+      const speed = 40; // 打字速度，越小越快 (毫秒)
+
+      typeInterval = setInterval(() => {
+        element.textContent += content.charAt(i);
+        i++;
+        // 打完了
+        if (i >= content.length) {
+          clearInterval(typeInterval);
+          element.classList.remove("typing-cursor"); // 移除光标
+        }
+      }, speed);
+    }
+
+    // --- 渲染函数 ---
+    function render() {
+      // 所有的交互都是基于 currentIndex
+      const isFinalPage = (currentIndex === SCENES.length); // 8
+
+      // 更新顶部页码
+      elements.pLeft.textContent = `${currentIndex + 1} / ${TOTAL_STEPS}`;
+
+      if (!isFinalPage) {
+        // === 普通剧情页 (0-7) ===
+        const scene = SCENES[currentIndex];
+        
+        elements.img.src = scene.img;
+        elements.title.textContent = scene.title || "";
+        
+        // 隐藏最终页的按钮
+        elements.finalExtras.classList.add("hidden");
+        elements.openAlipayBtn.classList.add("hidden");
+
+        if (!isTextRevealed) {
+          // 状态A：只显示图，隐藏文字框
+          elements.textCard.classList.add("hidden");
+          elements.textCard.classList.remove("fadeIn");
+          elements.text.textContent = ""; // 清空文字
+          
+          elements.hint.textContent = scene.hintA || "点击图片查看文字";
+          elements.pRight.textContent = elements.hint.textContent;
+        } else {
+          // 状态B：显示文字框，触发打字机
+          elements.textCard.classList.remove("hidden");
+          elements.textCard.classList.add("fadeIn");
+          
+          // 触发打字机
+          typeWriter(scene.text || "", elements.text);
+
+          elements.hint.textContent = scene.hintB || "再点击进入下一页";
+          elements.pRight.textContent = elements.hint.textContent;
+        }
+
+      } else {
+        // === 最终红包页 (8) ===
+        // 清除之前的打字机防止还在打
+        if (typeInterval) clearInterval(typeInterval);
+
+        elements.img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7WzW0AAAAASUVORK5CYII="; // 可换最终图
+        elements.title.textContent = FINAL.title;
+        
+        // 最终页直接显示全部文字，不一定要打字机（也可选择加上）
+        elements.text.textContent = FINAL.desc; 
+        elements.text.classList.remove("typing-cursor");
+
+        elements.textCard.classList.remove("hidden");
+        elements.finalExtras.classList.remove("hidden");
+        elements.openAlipayBtn.classList.remove("hidden");
+
+        elements.koulingBox.textContent = FINAL.kouling;
+        elements.finalTips.textContent = FINAL.tips;
+
+        elements.hint.textContent = "复制口令领取";
+        elements.pRight.textContent = "祝你开心每一天";
+        
+        // 支付宝链接处理
+        if (FINAL.alipayLink && FINAL.alipayLink.trim()) {
+          elements.openAlipayBtn.href = FINAL.alipayLink;
+          elements.openAlipayBtn.textContent = "打开支付宝";
+        } else {
+          elements.openAlipayBtn.href = "#";
+          elements.openAlipayBtn.textContent = "打开支付宝"; // 保持按钮样式
+        }
+      }
+    }
+
+    // --- 交互事件 ---
+    
+    // 点击图片区域
+    elements.tapArea.addEventListener("click", () => {
+      const isFinalPage = (currentIndex === SCENES.length);
+      if (isFinalPage) return; // 最后一页点图片没反应
+
+      if (!isTextRevealed) {
+        // 还没看文字 -> 显示文字
+        isTextRevealed = true;
+        render();
+      } else {
+        // 看了文字 -> 下一页
+        currentIndex++;
+        isTextRevealed = false;
+        render();
+      }
+    });
+
+    // 复制按钮
+    elements.copyBtn.addEventListener("click", async () => {
+      const text = FINAL.kouling || "";
+      try {
+        await navigator.clipboard.writeText(text);
+        elements.pRight.textContent = "✅ 口令已复制";
+        elements.copyBtn.textContent = "已复制";
+        setTimeout(()=> elements.copyBtn.textContent = "复制口令", 2000);
+      } catch (e) {
+        elements.pRight.textContent = "❌ 复制失败，请长按口令复制";
+      }
+    });
+
+    // 支付宝按钮
+    elements.openAlipayBtn.addEventListener("click", (e) => {
+      if (!FINAL.alipayLink) {
+         // 如果没填链接，通常依靠用户手动切换，这里不做拦截，
+         // 或者可以拦截提示“请手动打开”
+         // e.preventDefault(); 
+      }
+    });
+
+    // 初始化
+    render();
+
+  </script>
+</body>
+</html>
