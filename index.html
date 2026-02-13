@@ -277,14 +277,15 @@
     // ====== 最终页配置 (实际上是第9屏) ======
     const FINAL = {
       title: "第9页｜专属礼物",
+      //img: "./images/9.jpg",
       desc:
 `这是送给老婆的红包，按下面步骤领取：
 
 1）点击“复制口令”
 2）点击“打开支付宝”
 3）等待弹窗领取`,
-      kouling: "这里填写你的红包口令", 
-      alipayLink: "", // 如果有 scheme link 可填，没有则不填
+      kouling: "20251130xx", 
+      alipayLink: "https://www.wmslz.com/s/Zg1upr114gU#", // 如果有 scheme link 可填，没有则不填
       tips: "如果跳转失败，请手动打开支付宝搜索口令。"
     };
 
@@ -382,7 +383,7 @@
         // 清除之前的打字机防止还在打
         if (typeInterval) clearInterval(typeInterval);
 
-        elements.img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7WzW0AAAAASUVORK5CYII="; // 可换最终图
+        elements.img.src = "./images/9.jpg"; // 可换最终图
         elements.title.textContent = FINAL.title;
         
         // 最终页直接显示全部文字，不一定要打字机（也可选择加上）
@@ -397,7 +398,7 @@
         elements.finalTips.textContent = FINAL.tips;
 
         elements.hint.textContent = "复制口令领取";
-        elements.pRight.textContent = "祝你开心每一天";
+        elements.pRight.textContent = "祝肖老师开心每一天";
         
         // 支付宝链接处理
         if (FINAL.alipayLink && FINAL.alipayLink.trim()) {
