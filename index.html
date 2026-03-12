@@ -1,459 +1,633 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <title>9屏像素故事</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>测测你命中注定是哪里的留子(嘴毒版)</title>
   <style>
-    :root{
-      --bg:#0b0d12;
-      --fg:#e8eef7;
-      --muted:#9aa7b6;
-      --card:#121826;
-      --accent:#7aa7ff;
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bot: env(safe-area-inset-bottom, 0px);
-      --maxw: 420px;
-    }
-    *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
-    html,body{height:100%;}
-    body{
-      margin:0;
-      background: radial-gradient(1200px 800px at 50% 0%, #121a2c 0%, var(--bg) 55%);
-      color:var(--fg);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
-      overflow:hidden;
+    /* ============================================
+       CSS Variables & Reset
+    ============================================ */
+    :root {
+      --color-yellow: #FFF000;
+      --color-magenta: #FF00FF;
+      --color-cyan: #00FFFF;
+      --color-black: #000000;
+      --color-white: #FFFFFF;
+      --border-width: 4px;
+      --shadow-offset: 8px;
     }
 
-    /* 顶部进度 */
-    header{
-      position:fixed;
-      top:0; left:0; right:0;
-      padding: calc(10px + var(--safe-top)) 16px 10px;
-      display:flex;
-      justify-content:center;
-      pointer-events:none;
-      z-index:10;
-    }
-    .progress{
-      width:min(var(--maxw), calc(100% - 32px));
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      font-size:13px;
-      color:var(--muted);
-      opacity:.95;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    /* 主容器 */
-    main{
-      height:100%;
-      display:flex;
-      justify-content:center;
-      align-items:stretch;
-      padding: calc(54px + var(--safe-top)) 16px calc(18px + var(--safe-bot));
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background-color: var(--color-cyan);
+      background-image: radial-gradient(var(--color-black) 15%, transparent 16%);
+      background-size: 25px 25px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
 
-    .screen{
-      width:min(var(--maxw), 100%);
-      height:100%;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-
-    .card{
-      background: color-mix(in srgb, var(--card) 92%, black);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 16px;
-      overflow:hidden;
-      box-shadow: 0 10px 40px rgba(0,0,0,.35);
-    }
-
-    /* 图片区 */
-    .imgWrap{
-      position:relative;
-      flex: 1 1 auto;
-      min-height: 45vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-      user-select:none;
-    }
-
-    img.pixel{
+    /* ============================================
+       Container
+    ============================================ */
+    .container {
       width: 100%;
-      height: 100%;
-      max-height: 62vh;
-      object-fit: contain;
-      image-rendering: pixelated; /* 关键：像素风不模糊 */
-      image-rendering: crisp-edges;
-      background: #0a0f1c;
-      display:block;
+      max-width: 480px;
+      background: var(--color-white);
+      border: var(--border-width) solid var(--color-black);
+      box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--color-yellow);
+      padding: 30px 20px;
+      margin-top: 0;
     }
 
-    .tapHint{
-      position:absolute;
-      left:12px; right:12px; bottom:12px;
-      padding:10px 12px;
-      border-radius: 12px;
-      background: rgba(0,0,0,.35);
-      border: 1px solid rgba(255,255,255,.10);
-      color: rgba(232,238,247,.92);
-      font-size: 13px;
-      line-height: 1.25;
-      backdrop-filter: blur(8px);
+    /* ============================================
+       Cover Page
+    ============================================ */
+    .cover-page {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 62vh;
+      padding: 20px 0;
     }
 
-    /* 文本区 */
-    .textCard{
-      padding: 14px 14px 16px;
-      min-height: 120px; /* 给打字机预留一点高度防止跳动 */
+    .cover-title {
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--color-black);
+      line-height: 1.2;
+      margin-bottom: 20px;
+      text-transform: uppercase;
     }
-    .title{
-      margin:0 0 8px;
-      font-weight: 650;
-      letter-spacing:.2px;
+
+    .cover-subtitle {
       font-size: 16px;
-    }
-    .text{
-      margin:0;
-      color: rgba(232,238,247,.88);
-      font-size: 15px;
-      line-height: 1.65;
-      white-space: pre-line;
-      min-height: 1.65em;
-    }
-    /* 打字机光标效果（可选） */
-    .typing-cursor::after {
-      content: '|';
-      display: inline-block;
-      margin-left: 2px;
-      animation: blink 1s step-end infinite;
-      color: var(--accent);
-    }
-    @keyframes blink { 50% { opacity: 0; } }
-
-    .hidden{display:none;}
-
-    /* 最终屏交互区 */
-    .actions{
-      display:flex;
-      gap:10px;
-      margin-top:12px;
-    }
-    button, a.btn{
-      flex:1;
-      padding:12px 12px;
-      border-radius: 12px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      color: var(--fg);
-      font-size: 15px;
       font-weight: 600;
-      text-align:center;
-      text-decoration:none;
-      cursor: pointer;
-    }
-    button.primary, a.btn.primary{
-      background: linear-gradient(180deg, rgba(122,167,255,.95), rgba(122,167,255,.65));
-      border-color: rgba(122,167,255,.55);
-      color:#071022;
-    }
-    .small{
-      margin-top:10px;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-    .kouling{
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius: 12px;
-      border:1px dashed rgba(255,255,255,.18);
-      background: rgba(0,0,0,.22);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 15px;
-      letter-spacing:.2px;
-      word-break: break-all;
+      color: var(--color-black);
+      margin-bottom: 40px;
     }
 
-    /* 简单的淡入动画 */
-    .fadeIn{
-      animation: fadeIn .25s ease-out both;
+    .btn {
+      display: inline-block;
+      padding: 16px 40px;
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--color-black);
+      background: var(--color-yellow);
+      border: var(--border-width) solid var(--color-black);
+      box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--color-magenta);
+      cursor: pointer;
+      transition: all 0.1s ease;
     }
-    @keyframes fadeIn{from{opacity:0; transform: translateY(4px);} to{opacity:1; transform: translateY(0);} }
+
+    .btn:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 6px 6px 0px var(--color-magenta);
+    }
+
+    .btn:active {
+      transform: translate(4px, 4px);
+      box-shadow: 4px 4px 0px var(--color-magenta);
+    }
+
+    /* ============================================
+       Quiz Page
+    ============================================ */
+    .quiz-page {
+      display: none;
+    }
+
+    .quiz-page.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 62vh;
+    }
+
+    .progress {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: var(--color-black);
+    }
+
+    .question {
+      font-size: 24px;
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 30px;
+      line-height: 1.4;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .option {
+      display: block;
+      padding: 16px 20px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-black);
+      background: var(--color-white);
+      border: var(--border-width) solid var(--color-black);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: left;
+    }
+
+    .option:hover {
+      background: var(--color-cyan);
+      transform: translate(-2px, -2px);
+      box-shadow: 4px 4px 0px var(--color-black);
+    }
+
+    .option.selected {
+      background: var(--color-magenta);
+      color: var(--color-white);
+      transform: translate(2px, 2px);
+      box-shadow: 4px 4px 0px var(--color-black);
+    }
+
+    .quiz-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    @media (max-height: 680px) {
+      .cover-page {
+        min-height: auto;
+      }
+
+      .quiz-page.active {
+        min-height: auto;
+      }
+
+      .result-page.active {
+        min-height: auto;
+      }
+    }
+
+    .btn-prev {
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      background: #f4f4f4;
+      border-width: 2px;
+      box-shadow: none;
+      color: #333333;
+      transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn-prev:hover {
+      background: #ebebeb;
+      color: #111111;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-prev:active {
+      background: #dfdfdf;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-prev:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ============================================
+       Result Page
+    ============================================ */
+    .result-page {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .result-page.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 62vh;
+    }
+
+    .result-emoji {
+      font-size: 72px;
+      margin-bottom: 20px;
+    }
+
+    .result-title {
+      font-size: 36px;
+      font-weight: 900;
+      margin-bottom: 30px;
+      color: var(--color-black);
+    }
+
+    .result-body {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.8;
+      white-space: pre-line;
+      margin-bottom: 40px;
+      text-align: left;
+      padding: 20px;
+      background: var(--color-yellow);
+      border: var(--border-width) solid var(--color-black);
+    }
+
+    .result-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .btn-secondary {
+      background: var(--color-cyan);
+    }
+
+    .btn-easter-egg {
+      background: var(--color-magenta);
+      color: var(--color-white);
+    }
+
+    /* ============================================
+       Animations
+    ============================================ */
+    .slide-out {
+      animation: slideOut 0.3s ease forwards;
+    }
+
+    .slide-in {
+      animation: slideIn 0.3s ease forwards;
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* ============================================
+       Utility
+    ============================================ */
+    .hidden {
+      display: none !important;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <div class="progress">
-      <div id="pLeft">1 / 9</div>
-      <div id="pRight">点击图片查看文字</div>
+  <div class="container">
+    <!-- Cover Page -->
+    <div id="cover" class="cover-page">
+      <h1 class="cover-title">测测你命中注定是哪里的留子</h1>
+      <p class="cover-subtitle">嘴毒, 玻璃心别测</p>
+      <button class="btn" onclick="startQuiz()">开始测试</button>
     </div>
-  </header>
 
-  <main>
-    <div class="screen">
-      <section class="card imgWrap" id="tapArea" aria-label="点击交互区">
-        <img id="img" class="pixel" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7WzW0AAAAASUVORK5CYII=" alt="Pixel Art" />
-        <div class="tapHint" id="hint">点击图片查看文字</div>
-      </section>
-
-      <section class="card textCard hidden" id="textCard">
-        <h2 class="title" id="title"></h2>
-        <p class="text" id="text"></p>
-
-        <div id="finalExtras" class="hidden">
-          <div class="kouling" id="koulingBox"></div>
-          <div class="actions">
-            <button class="primary" id="copyBtn" type="button">复制口令</button>
-            <a class="btn" id="openAlipayBtn" href="#" rel="noopener">打开支付宝</a>
-          </div>
-          <div class="small" id="finalTips"></div>
-        </div>
-      </section>
+    <!-- Quiz Page -->
+    <div id="quiz" class="quiz-page">
+      <h2 class="cover-subtitle">你命中注定是哪里的留子</h2>
+      <div class="progress" id="progress">1 / 5</div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div class="quiz-actions">
+        <button id="prev-btn" class="btn btn-prev" type="button" onclick="goToPreviousQuestion()">上一题</button>
+      </div>
     </div>
-  </main>
+
+    <!-- Result Page -->
+    <div id="result" class="result-page">
+      <div class="result-emoji" id="result-emoji"></div>
+      <h2 class="result-title" id="result-title"></h2>
+      <div class="result-body" id="result-body"></div>
+      <div class="result-actions">
+        <button class="btn btn-secondary" onclick="restartQuiz()">再测一次</button>
+        <button class="btn" onclick="shareResult()">分享结果</button>
+      </div>
+    </div>
+  </div>
 
   <script>
-    /**
-     * 配置区
-     * 1-8屏：交互故事
-     * 第9屏（index=8）：支付宝红包
-     */
-    
-    // ====== 修改：这里现在是8个场景 ======
-    const SCENES = [
-      {
-        title: "给喜欢仪式感的肖老师",
-        text: "肖老师说这是第一次给男生送花, 那我也要送给肖老师这份充满仪式感的礼物, 也是我第一个“笨拙”的礼物.总共有9张哦, 猜猜里面会有哪些照片吧,嘻嘻",
-        img: "./images/1.png", // 替换你的图片链接
-        hintA: "点击图片查看文字",
-        hintB: "再点击进入下一页"
-      },
-      {
-        title: "我不喜欢视频",
-        text: "我大概是个醋坛子, 肖老师说过跟异性的互动(除了好朋友和同事),都能记得.所以这第一次超长视频,感受到了肖老师对我的超级破例,不光跟我视频, 还轮流展示猫猫,可爱得不行,赶紧偷拍!于是有了这第二张照片.",
-        img: "./images/2.png", 
-        hintA: "点击图片查看文字",
-        hintB: "再点击进入下一页"
-      },
-      {
-        title: "怎么能这么可爱!!",
-        text: "看到这组照片,我真的要被可爱得融化了.不光马上设置为壁纸, 还偷偷去查了下这个帽子想送给你!(不过淘宝上没有正品,气死了😡),不过后面肖老师自己也觉得贵了,而且不太喜欢这种“溢价”,又更喜欢你了,我怎么这么大的福气,找到又漂亮可爱,又贤惠的宝宝的~",
-        img: "./images/3.png",
-      },
-      {
-        title: "照片回顾时间!",
-        text: "肖老师一直在跟我发以前的照片呢,原来一直是活力满满的样子呢,只是现在经常感叹没之前瘦了,我夹在中间进退两难,我打这段话的时候她还在开开心心啃着冷冻榴莲,我看着也开心,但也想监督她,这样就不会再垂头丧气地讲出“我当时好瘦了”",
-        img: "./images/4.png",
-      },
-      {
-        title: "一睁眼就能看到照片也太幸福了",
-        text: "虽然现在是异地呜呜, 但是肖老师一直让我感到惊喜,记得这是哪天我睡了之后,你自己AI出来的合照. 早上一睁眼就看到了,好想一睁眼就看到你呀宝宝,异地的苦不想再吃了",
-        img: "./images/5.png",
-      },
-      {
-        title: "永远默默支持理解我的肖老师",
-        text: "好运来了!接到了武汉公司的面试!!肖老师全程为我保驾护航,跟我视频的时候甚至有点稳稳的幸福的感觉.能理解我那段时间很忙,视频的时候也没啥话,真是太好辣.无论结果如何,我都一定要回武汉跟肖老师会合!!",
-        img: "./images/6.png",
-      },
-      {
-        title: "美死我了!姐姐!!",
-        text: "马上过年了呢,参加年会的打扮好美好美哦,想起了打扮得非常精致的女朋友和穿的像小孩的男朋友(,所以我也得穿的配上肖老师了",
-        img: "./images/7.png",
-      },
-      {
-        title: "别忘了牛牛和凑凑哦",
-        text: "两只对我热情的猫猫要放在压轴哦,这是最后一张图。\n再点击一次，就会看到我准备的礼物啦。",
-        img: "./images/8.png",
-        hintB: "再点击领取礼物"
-      }
-    ];
+    // ============================================
+    // QUIZ CONFIG - Modify this object to change content
+    // ============================================
+    const QUIZ_CONFIG = {
+      // Questions and Options
+      questions: [
+        {
+          id: 'Q1',
+          text: '你怎么看白人饭🥙?',
+          options: [
+            { id: 'A', text: '生命体征维持餐,活着就行', scores: { US:0, UK:0, AU:3, HK:0, EU:3, CN:0 } },
+            { id: 'B', text: '忍一段时间也行',        scores: { US:2, UK:2, AU:0, HK:0, EU:0, CN:0 } },
+            { id: 'C', text: '不行,我要米其林外卖',       scores: { US:0, UK:0, AU:0, HK:3, EU:0, CN:0 } },
+            { id: 'D', text: '我直接回国猛吃',             scores: { US:0, UK:0, AU:0, HK:0, EU:0, CN:3 } },
+          ],
+        },
+        {
+          id: 'Q2',
+          text: '害怕受到歧视吗？',
+          options: [
+            { id: 'A', text: '怕,晚上被窝里掉小珍珠🥲',   scores: { US:3, UK:0, AU:0, HK:0, EU:0, CN:0 } },
+            { id: 'B', text: '怕,但是能躲🏃‍♀️‍➡️',          scores: { US:2, UK:1, AU:0, HK:0, EU:0, CN:0 } },
+            { id: 'C', text: '不怕,不服就干👊',          scores: { US:0, UK:1, AU:1, HK:1, EU:1, CN:0 } },
+            { id: 'D', text: '我选择中国人抱团',      scores: { US:0, UK:0, AU:3, HK:0, EU:0, CN:2 } },
+          ],
+        },
+        {
+          id: 'Q3',
+          text: '家里知道你要花多少钱💰吗？',
+          options: [
+            { id: 'A', text: '知道,不过家里不缺钱😎',  scores: { US:2, UK:2, AU:2, HK:0, EU:0, CN:0 } },
+            { id: 'B', text: '知道,他们说全家托举👐',    scores: { US:0, UK:1, AU:0, HK:2, EU:0, CN:1 } },
+            { id: 'C', text: '不知道,我没敢说🫢',      scores: { US:0, UK:0, AU:0, HK:0, EU:3, CN:0 } },
+            { id: 'D', text: '自己挣的💪',    scores: { US:0, UK:0, AU:0, HK:0, EU:0, CN:3 } },
+          ],
+        },
+        {
+          id: 'Q4',
+          text: '出去是为了什么？',
+          easterEggOption: 'C',
+          options: [
+            { id: 'A', text: '镀金,回来好找工作',  scores: { US:0, UK:3, AU:0, HK:3, EU:0, CN:0 } },
+            { id: 'B', text: '真的想留在那边',  scores: { US:3, UK:0, AU:2, HK:0, EU:0, CN:0 } },
+            { id: 'C', text: '逃，国内太卷了',      scores: { US:0, UK:0, AU:0, HK:0, EU:0, CN:0 } },
+            { id: 'D', text: '我也不知道',      scores: { US:0, UK:0, AU:3, HK:0, EU:0, CN:2 } },
+          ],
+        },
+        {
+          id: 'Q5',
+          text: '村里发金条了，你怎么办',
+          options: [
+            { id: 'A', text: '不管,金条留给我弟',      scores: { US:2, UK:2, AU:2, HK:2, EU:2, CN:0 } },
+            { id: 'B', text: '先看金条成色',      scores: { US:0, UK:0, AU:0, HK:3, EU:0, CN:1 } },
+            { id: 'C', text: '连夜赶回',    scores: { US:0, UK:0, AU:0, HK:0, EU:0, CN:3 } },
+            { id: 'D', text: '什么金条,我没收到',    scores: { US:2, UK:0, AU:0, HK:0, EU:2, CN:0 } },
+          ],
+        },
+      ],
 
-    // ====== 最终页配置 (实际上是第9屏) ======
-    const FINAL = {
-      title: "第9页｜专属礼物",
-      //img: "./images/9.jpg",
-      desc:
-`这是送给老婆的红包，按下面步骤领取：
-1）点击“复制口令”
-2）点击“打开支付宝”
-3）等待弹窗领取`,
-      kouling: "20251130xx", 
-      alipayLink: "https://www.wmslz.com/s/Zg1upr114gU#", // 如果有 scheme link 可填，没有则不填
-      tips: "如果跳转失败，请手动打开支付宝搜索口令。"
+      // Result Content
+      results: {
+        US: {
+          emoji: '🇺🇸',
+          title: '美国',
+          body: `恭喜你, 美国梦\nH1B抽签25%\n归来月薪8K\n永远回不了本\n\n但你还是会去的, 对吧`,
+        },
+        UK: {
+          emoji: '🇬🇧',
+          title: '英国',
+          body: `一年硕\n自己累了\n别人笑了\n\n学校放简历第一行\n祈祷没人问第二行`,
+        },
+        AU: {
+          emoji: '🇦🇺',
+          title: '澳洲',
+          body: `发配成功\n开始求生\n\n天很蓝\n草很绿\n中国人很多\n简历很安静`,
+        },
+        HK: {
+          emoji: '🇭🇰🇲🇴🇸🇬',
+          title: '港澳新',
+          body: `出国了\n\n算出国了\n真的出国了吗\n\n竞争比国内小亿点点\n大概`,
+        },
+        EU: {
+          emoji: '🇪🇺',
+          title: '欧陆',
+          body: `吃草第一关\n语言第二关\n找工第三关\n\n闯过去了是真勇士\n闯不过去也没人知道你去过`,
+        },
+        CN: {
+          emoji: '🇨🇳',
+          title: '回国',
+          body: `村里发金条了\n享受廉价劳动力了\n\n没说你🤭\n说的是快递和外卖\n还有小费不用给了呢`,
+        },
+        EASTER_EGG: {
+          emoji: '🥚',
+          title: '彩蛋',
+          body: `恭喜你发现彩蛋\n\n逃避可耻但是有用\n——你的目的地是任何一个不是家的地方\n\n谁不是呢`,
+        },
+      },
     };
 
-    // ====== 逻辑代码 ======
-    const $ = (id) => document.getElementById(id);
-    
-    // 元素获取
-    const elements = {
-      img: $("img"),
-      tapArea: $("tapArea"),
-      hint: $("hint"),
-      textCard: $("textCard"),
-      title: $("title"),
-      text: $("text"),
-      finalExtras: $("finalExtras"),
-      koulingBox: $("koulingBox"),
-      copyBtn: $("copyBtn"),
-      openAlipayBtn: $("openAlipayBtn"),
-      finalTips: $("finalTips"),
-      pLeft: $("pLeft"),
-      pRight: $("pRight")
-    };
+    // ============================================
+    // Quiz State
+    // ============================================
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
 
-    // 状态变量
-    const TOTAL_STEPS = SCENES.length + 1; // 8场景 + 1最终 = 9
-    let currentIndex = 0;   // 0 ~ 8
-    let isTextRevealed = false;
-    let typeInterval = null; // 用于存储打字机的定时器ID
+    // ============================================
+    // DOM Elements
+    // ============================================
+    const coverPage = document.getElementById('cover');
+    const quizPage = document.getElementById('quiz');
+    const resultPage = document.getElementById('result');
+    const progressEl = document.getElementById('progress');
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const prevBtn = document.getElementById('prev-btn');
+    const resultEmojiEl = document.getElementById('result-emoji');
+    const resultTitleEl = document.getElementById('result-title');
+    const resultBodyEl = document.getElementById('result-body');
 
-    // --- 核心：打字机函数 ---
-    function typeWriter(content, element) {
-      // 1. 清空内容和旧定时器
-      element.textContent = "";
-      if (typeInterval) clearInterval(typeInterval);
-      
-      // 2. 添加光标样式
-      element.classList.add("typing-cursor");
-
-      // 3. 开始打字
-      let i = 0;
-      const speed = 40; // 打字速度，越小越快 (毫秒)
-
-      typeInterval = setInterval(() => {
-        element.textContent += content.charAt(i);
-        i++;
-        // 打完了
-        if (i >= content.length) {
-          clearInterval(typeInterval);
-          element.classList.remove("typing-cursor"); // 移除光标
-        }
-      }, speed);
+    // ============================================
+    // Functions
+    // ============================================
+    function startQuiz() {
+      coverPage.classList.add('slide-out');
+      setTimeout(() => {
+        coverPage.classList.add('hidden');
+        coverPage.classList.remove('slide-out');
+        quizPage.classList.remove('hidden');
+        quizPage.classList.add('active', 'slide-in');
+        renderQuestion();
+      }, 300);
     }
 
-    // --- 渲染函数 ---
-    function render() {
-      // 所有的交互都是基于 currentIndex
-      const isFinalPage = (currentIndex === SCENES.length); // 8
+    function renderQuestion() {
+      const question = QUIZ_CONFIG.questions[currentQuestionIndex];
+      progressEl.textContent = `${currentQuestionIndex + 1} / ${QUIZ_CONFIG.questions.length}`;
+      questionEl.textContent = question.text;
+      prevBtn.disabled = currentQuestionIndex === 0;
+      prevBtn.classList.toggle('hidden', currentQuestionIndex === 0);
 
-      // 更新顶部页码
-      elements.pLeft.textContent = `${currentIndex + 1} / ${TOTAL_STEPS}`;
-
-      if (!isFinalPage) {
-        // === 普通剧情页 (0-7) ===
-        const scene = SCENES[currentIndex];
-        
-        elements.img.src = scene.img;
-        elements.title.textContent = scene.title || "";
-        
-        // 隐藏最终页的按钮
-        elements.finalExtras.classList.add("hidden");
-        elements.openAlipayBtn.classList.add("hidden");
-
-        if (!isTextRevealed) {
-          // 状态A：只显示图，隐藏文字框
-          elements.textCard.classList.add("hidden");
-          elements.textCard.classList.remove("fadeIn");
-          elements.text.textContent = ""; // 清空文字
-          
-          elements.hint.textContent = scene.hintA || "点击图片查看文字";
-          elements.pRight.textContent = elements.hint.textContent;
-        } else {
-          // 状态B：显示文字框，触发打字机
-          elements.textCard.classList.remove("hidden");
-          elements.textCard.classList.add("fadeIn");
-          
-          // 触发打字机
-          typeWriter(scene.text || "", elements.text);
-
-          elements.hint.textContent = scene.hintB || "再点击进入下一页";
-          elements.pRight.textContent = elements.hint.textContent;
+      optionsEl.innerHTML = '';
+      const currentAnswer = userAnswers[currentQuestionIndex];
+      question.options.forEach((option, index) => {
+        const optionEl = document.createElement('label');
+        optionEl.className = 'option';
+        if (currentAnswer && currentAnswer.optionId === option.id) {
+          optionEl.classList.add('selected');
         }
+        optionEl.textContent = option.text;
+        optionEl.onclick = () => selectOption(option);
+        optionsEl.appendChild(optionEl);
+      });
+    }
 
+    function selectOption(option) {
+      const question = QUIZ_CONFIG.questions[currentQuestionIndex];
+      userAnswers[currentQuestionIndex] = {
+        questionId: question.id,
+        optionId: option.id,
+        scores: option.scores,
+      };
+
+      // Check for easter egg
+      if (question.easterEggOption && option.id === question.easterEggOption) {
+        showResult('EASTER_EGG');
+        return;
+      }
+
+      // Move to next question or show result
+      if (currentQuestionIndex < QUIZ_CONFIG.questions.length - 1) {
+        // Animate out
+        quizPage.classList.add('slide-out');
+        setTimeout(() => {
+          quizPage.classList.remove('slide-out');
+          currentQuestionIndex++;
+          renderQuestion();
+          quizPage.classList.add('slide-in');
+          setTimeout(() => quizPage.classList.remove('slide-in'), 300);
+        }, 300);
       } else {
-        // === 最终红包页 (8) ===
-        // 清除之前的打字机防止还在打
-        if (typeInterval) clearInterval(typeInterval);
-
-        elements.img.src = "./images/9.jpg"; // 可换最终图
-        elements.title.textContent = FINAL.title;
-        
-        // 最终页直接显示全部文字，不一定要打字机（也可选择加上）
-        elements.text.textContent = FINAL.desc; 
-        elements.text.classList.remove("typing-cursor");
-
-        elements.textCard.classList.remove("hidden");
-        elements.finalExtras.classList.remove("hidden");
-        elements.openAlipayBtn.classList.remove("hidden");
-
-        elements.koulingBox.textContent = FINAL.kouling;
-        elements.finalTips.textContent = FINAL.tips;
-
-        elements.hint.textContent = "复制口令领取";
-        elements.pRight.textContent = "祝肖老师开心每一天";
-        
-        // 支付宝链接处理
-        if (FINAL.alipayLink && FINAL.alipayLink.trim()) {
-          elements.openAlipayBtn.href = FINAL.alipayLink;
-          elements.openAlipayBtn.textContent = "打开支付宝";
-        } else {
-          elements.openAlipayBtn.href = "#";
-          elements.openAlipayBtn.textContent = "打开支付宝"; // 保持按钮样式
-        }
+        showResult(calculateResult());
       }
     }
 
-    // --- 交互事件 ---
-    
-    // 点击图片区域
-    elements.tapArea.addEventListener("click", () => {
-      const isFinalPage = (currentIndex === SCENES.length);
-      if (isFinalPage) return; // 最后一页点图片没反应
+    function goToPreviousQuestion() {
+      if (currentQuestionIndex === 0) return;
 
-      if (!isTextRevealed) {
-        // 还没看文字 -> 显示文字
-        isTextRevealed = true;
-        render();
+      quizPage.classList.add('slide-out');
+      setTimeout(() => {
+        quizPage.classList.remove('slide-out');
+        currentQuestionIndex--;
+        renderQuestion();
+        quizPage.classList.add('slide-in');
+        setTimeout(() => quizPage.classList.remove('slide-in'), 300);
+      }, 300);
+    }
+
+    function calculateResult() {
+      const totals = { US: 0, UK: 0, AU: 0, HK: 0, EU: 0, CN: 0 };
+
+      userAnswers.forEach(answer => {
+        Object.keys(totals).forEach(dest => {
+          totals[dest] += answer.scores[dest] || 0;
+        });
+      });
+
+      // Find destination with highest score
+      let maxScore = -1;
+      let result = 'US';
+      Object.keys(totals).forEach(dest => {
+        if (totals[dest] > maxScore) {
+          maxScore = totals[dest];
+          result = dest;
+        }
+      });
+
+      return result;
+    }
+
+    function showResult(resultKey) {
+      const result = QUIZ_CONFIG.results[resultKey];
+
+      quizPage.classList.add('slide-out');
+      setTimeout(() => {
+        quizPage.classList.add('hidden', 'slide-out');
+        resultPage.classList.remove('hidden');
+        resultEmojiEl.textContent = result.emoji;
+        resultTitleEl.textContent = result.title;
+        resultBodyEl.textContent = result.body;
+        resultPage.classList.add('active', 'slide-in');
+      }, 300);
+    }
+
+    function restartQuiz() {
+      currentQuestionIndex = 0;
+      userAnswers = [];
+      resultPage.classList.add('slide-out');
+      setTimeout(() => {
+        // 清理 resultPage 状态
+        resultPage.classList.remove('slide-out');
+        resultPage.classList.add('hidden');
+        resultPage.classList.remove('active');
+
+        // 确保 quizPage 保持隐藏状态
+        quizPage.classList.add('hidden');
+        quizPage.classList.remove('slide-out');
+
+        // 显示 coverPage
+        coverPage.classList.remove('hidden');
+        coverPage.classList.add('slide-in');
+        setTimeout(() => coverPage.classList.remove('slide-in'), 300);
+      }, 300);
+    }
+
+    async function shareResult() {
+      const resultTitle = resultTitleEl.textContent;
+      const resultBody = resultBodyEl.textContent;
+      const shareText = `我的留学目的地是${resultTitle}！\n\n${resultBody}\n\n测试地址：`;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: '测测你命中注定是哪里的留子',
+            text: shareText,
+          });
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            promptShare(shareText);
+          }
+        }
       } else {
-        // 看了文字 -> 下一页
-        currentIndex++;
-        isTextRevealed = false;
-        render();
+        promptShare(shareText);
       }
-    });
+    }
 
-    // 复制按钮
-    elements.copyBtn.addEventListener("click", async () => {
-      const text = FINAL.kouling || "";
-      try {
-        await navigator.clipboard.writeText(text);
-        elements.pRight.textContent = "✅ 口令已复制";
-        elements.copyBtn.textContent = "已复制";
-        setTimeout(()=> elements.copyBtn.textContent = "复制口令", 2000);
-      } catch (e) {
-        elements.pRight.textContent = "❌ 复制失败，请长按口令复制";
-      }
-    });
-
-    // 支付宝按钮
-    elements.openAlipayBtn.addEventListener("click", (e) => {
-      if (!FINAL.alipayLink) {
-         // 如果没填链接，通常依靠用户手动切换，这里不做拦截，
-         // 或者可以拦截提示“请手动打开”
-         // e.preventDefault(); 
-      }
-    });
-
-    // 初始化
-    render();
-
+    function promptShare(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      alert('结果已复制到剪贴板，截图分享吧！');
+    }
   </script>
 </body>
 </html>
